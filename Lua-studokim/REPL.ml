@@ -1,12 +1,12 @@
 open Base
-open Lambda_lib
+open Lua_lib
 
 let run_repl _ =
   Caml.Format.eprintf "OCaml-style toplevel (ocamlc, utop) is not implemented"
 ;;
 
 let run_single eval =
-  let open Lambda_lib in
+  let open Lua_lib in
   let text = Stdio.In_channel.(input_all stdin) |> String.rstrip in
   let ast = Parser.parse text in
   match ast with

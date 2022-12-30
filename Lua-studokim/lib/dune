@@ -1,6 +1,6 @@
 (library
- (name lambda_lib)
- (public_name Lambda.Lib)
+ (name lua_lib)
+ (public_name Lua.Lib)
  (modules Ast Lambda Interpret Parser Printast Pprintast utils Tests)
  (modules_without_implementation ast)
  (libraries base angstrom)

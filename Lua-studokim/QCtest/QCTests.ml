@@ -4,8 +4,8 @@
 
 open Format
 open QCheck.Gen
-open Lambda_lib
-open Lambda_lib.Utils
+open Lua_lib
+open Lua_lib.Utils
 
 let varname =
   map (fun n -> String.make 1 (Char.chr n)) (int_range (Char.code 'a') (Char.code 'z'))
