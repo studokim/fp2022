@@ -289,21 +289,28 @@
    * Функции (два варианта синтаксиса)
       * С рекурсией.
    * Параметры
-    * Переменные, разумеется. На `+=` можно забить
-    * Нужна ли поддержка positional parameters? Нужно будет думать, откуда их брать
-        * Нет. Если что, то их можно взять из `Sys.argv`
-    * Нужна ли поддержка special parameters?
-        * Нет
+     * Переменные, разумеется. На `+=` можно забить
+     * Нужна ли поддержка positional parameters? Нужно будет думать, откуда их брать
+         * Нет. Если что, то их можно взять из `Sys.argv`
+     * Нужна ли поддержка special parameters?
+         * Нет
    * Expansions
-    * Brace expansion
-    * Нужно ли поддерживать Tilde expansion? *не надо*
-    * Shell Parameter Expansion
-    * Двойные backtickи надо
-    * Arithmetic Expansion, без него какой-нибудь факториал не написать
-    * Process Substitution не надо
-    * Word Splitting сделайте дефолтный. Вообще, всякие переменные можно брать из окружения, в котором запушен интерпретатор BashML
-    * Filename Expansion
-    * [Quote Removal](https://www.gnu.org/software/bash/manual/html_node/Quote-Removal.html)
+     * Brace expansion
+     * Нужно ли поддерживать Tilde expansion? *не надо*
+     * [Shell Parameter Expansion](https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html)
+       * \${parameter}, \$parameter надо
+       * \${parameter:offset} и \${parameter:offset:length} надо
+       * \${#parameter} надо
+       * \${parameter#word} и \${parameter##word} надо
+       * \${parameter%word} и
+         \${parameter%%word} надо
+       * \${parameter/pattern/string}, \${parameter//pattern/string}, \${parameter/#pattern/string}, \${parameter/%pattern/string} и остальное не нужно
+     * Двойные backtickи надо
+     * Arithmetic Expansion, без него какой-нибудь факториал не написать
+     * Process Substitution не надо
+     * Word Splitting сделайте дефолтный. Вообще, всякие переменные можно брать из окружения, в котором запушен интерпретатор BashML
+     * Filename Expansion не надо
+     * [Quote Removal](https://www.gnu.org/software/bash/manual/html_node/Quote-Removal.html)
    * Pattern Matching
       * [Рекурсивный](https://stackoverflow.com/questions/28176590) `**` не нужен
       * Нужно ли поддерживать особые случаи в [...]? *я не знаю что это такое*
