@@ -1,3 +1,7 @@
+(** Copyright 2022-2023, Mikhail Vyrodov *)
+
+(** SPDX-License-Identifier: CC0-1.0 *)
+
 open C_lib
 
 let () =

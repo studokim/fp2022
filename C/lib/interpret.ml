@@ -42,7 +42,8 @@ type context = {
   var_map : variable VarMap.t;
   heap : Bytes.t;
   free_byte : int;
-  (* Тут ctype - тип указателя, первый int - размер блока в байтах, второй int - индекс начала блока в куче*)
+  (* ctype field stands for the pointer type, first int filed - size of the memory block in bytes,
+     second int - index of the start of the block in the heap*)
   occupied_list : (ctype * int * int) list;
   func_list : function_list;
 }
@@ -91,15 +92,11 @@ let update_var var_name value addr var_map =
   | Some variable ->
       Result.return
         (VarMap.add var_name
-           { var_type = variable.var_type; var_value = value; var_addr = addr }
+           { variable with var_addr = addr; var_value = value }
            var_map)
   | None -> Result.fail (UnknownVariable ("Unknown variable " ^ var_name ^ "."))
 
 module PointerInterpret : sig
-  (* Тут ctype - тип указателя, первый int - размер блока в байтах, второй int - индекс начала блока в куче*)
-
-  (* Тут первая пара это желаемый тип указателя и размер массива в байтах. Второй - сам указатель,
-      котоый состоит из типа и индекса начала его блока в куче (ctype * int) vpointer *)
   val malloc :
     ctype -> name -> int -> context -> (context, Utils.error) Result.t
 
@@ -164,13 +161,10 @@ end = struct
           Result.( >>= ) new_var_map (fun x ->
               Result.return
                 {
-                  return_type = ctx.return_type;
-                  func_name = ctx.func_name;
-                  var_map = x;
-                  heap = ctx.heap;
-                  free_byte = new_free_byte;
+                  ctx with
                   occupied_list = new_list;
-                  func_list = ctx.func_list;
+                  free_byte = new_free_byte;
+                  var_map = x;
                 })
         else
           Result.fail
@@ -680,8 +674,7 @@ end = struct
         | _ -> fail not_implemented)
     | ArrayElem (arr_name, index_expr) -> (
         take_pointer arr_name ctx.var_map >>= fun variable ->
-        all_ops index_expr ctx >>= fun index ->
-        match index with
+        all_ops index_expr ctx >>= function
         | IVInt x, TInt32 -> (
             match (variable.var_type, variable.var_value) with
             | TPointer (TPointer _), _ -> fail not_implemented
@@ -707,8 +700,7 @@ end = struct
       -> (
         match
           Stdlib.List.find_opt
-            (fun func ->
-              if String.equal func.function_name func_name then true else false)
+            (fun func -> String.equal func.function_name func_name)
             ctx.func_list
         with
         | Some func -> (
@@ -731,13 +723,10 @@ end = struct
               in
               let new_ctx =
                 {
-                  return_type = func.function_type;
-                  func_name = func.function_name;
+                  ctx with
                   var_map = VarMap.empty;
-                  heap = ctx.heap;
-                  free_byte = ctx.free_byte;
-                  occupied_list = ctx.occupied_list;
-                  func_list = ctx.func_list;
+                  func_name = func.function_name;
+                  return_type = func.function_type;
                 }
               in
               add_args func.function_arguments f_args new_ctx
@@ -968,8 +957,7 @@ end = struct
     in
     let assign_arr_elem arr_name index_expr assign_expr ctx =
       take_pointer arr_name ctx.var_map >>= fun variable ->
-      all_ops index_expr ctx >>= fun index ->
-      match index with
+      all_ops index_expr ctx >>= function
       | IVInt x, TInt32 -> (
           all_ops assign_expr ctx >>= fun (new_elem, new_type) ->
           match (variable.var_type, variable.var_value) with
@@ -1005,8 +993,7 @@ end = struct
 
   and interpret_st_block st_block ctx loop_flag =
     let open Result in
-    let return_val others ret_pair =
-      match ret_pair with
+    let return_val others = function
       | None, new_context ->
           interpret_st_block others (return new_context) loop_flag
       | Some x, new_context -> return (Option.Some x, new_context, false)
@@ -1159,8 +1146,7 @@ end = struct
   let run func_list =
     match
       Stdlib.List.find_opt
-        (fun func ->
-          if String.equal func.function_name "main" then true else false)
+        (fun func -> String.equal func.function_name "main")
         func_list
     with
     | Some func ->
@@ -1186,8 +1172,7 @@ let value_to_str = function
   | IVChar x -> Char.to_string x
   | IVString x -> x
 
-let print_err err =
-  match err with
+let print_err = function
   | Base.Result.Error (UnknownVariable my_str)
   | Base.Result.Error (ParsingError my_str)
   | Base.Result.Error (WrongVariableType my_str)

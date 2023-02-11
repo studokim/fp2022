@@ -1,7 +1,7 @@
 (library
  (name c_lib)
  (public_name C.Lib)
- (modules Ast Parser Utils Interpret)
+ (modules Ast Parser Utils Interpret Pprintast)
  (libraries base angstrom stdint)
  (preprocess
   (pps ppx_expect ppx_deriving.show))
