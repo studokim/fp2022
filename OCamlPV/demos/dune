@@ -1,0 +1,14 @@
+(executable
+ (name demo)
+ (modules Demo)
+ (public_name demo)
+ (libraries OCamlPV.Lib stdio))
+
+(executable
+ (name demostdlib)
+ (modules Demostdlib)
+ (public_name demostdlib)
+ (libraries OCamlPV.Lib stdio))
+
+(cram
+ (deps ./demo.exe ./demostdlib.exe))

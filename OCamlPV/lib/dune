@@ -1,0 +1,18 @@
+(library
+ (name ocaml_pv_lib)
+ (public_name OCamlPV.Lib)
+ (modules
+  Ast
+  Interpret
+  Inferencer
+  Parser
+  Printer
+  Pprintvalue
+  Pprinttypedtree
+  Typedtree
+  Stdlib
+  Utils)
+ (libraries base angstrom)
+ (preprocess
+  (pps ppx_expect ppx_deriving.show ppx_deriving.eq))
+ (inline_tests))
