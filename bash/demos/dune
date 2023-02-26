@@ -1,0 +1,17 @@
+(executable
+ (name demoParser)
+ (modules demoParser)
+ (public_name demoParser)
+ (libraries bash_lib stdio))
+
+(executable
+ (name demoInterpreter)
+ (modules demoInterpreter)
+ (public_name demoInterpreter)
+ (libraries bash_lib stdio))
+
+(cram
+ (deps ./demoParser.exe))
+
+(cram
+ (deps ./demoInterpreter.exe))

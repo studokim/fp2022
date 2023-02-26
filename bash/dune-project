@@ -1,0 +1,33 @@
+(lang dune 3.4)
+
+(generate_opam_files true)
+
+(cram enable)
+
+(license LGPL-3.0-or-later)
+
+(authors "Ksenia Kuzmina")
+
+(maintainers "Ksenia Kuzmina")
+
+(bug_reports "https://github.com/sayumikko/fp2022/issues")
+
+(homepage "https://github.com/sayumikko/fp2022")
+
+(package
+ (name bash)
+ (synopsis "An interpreter for Bash language")
+ (description
+  "Supports functions, compound, extensions, working with arrays and redirects")
+ (version 0.1)
+ (depends
+  dune
+  (ppx_inline_test :with-test)
+  qcheck-core
+  re
+  stdio
+  ppx_expect
+  ppx_deriving
+  (odoc :with-doc)
+  (ocamlformat :build)
+  base))
