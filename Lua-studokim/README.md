@@ -1,97 +1,63 @@
-### An implementaion of Lua mini-language
+# An implementaion of Lua mini-language
 
 This is a homework for functional programming course.
 
-License: LGPL for implementation code + WTFPL for test examles in miniLanguage
+License: LGPL for implementation code + WTFPL for test examles in mini-language
 
 Author: Muravev Kirill, studokim@gmail.com
 
-Features done (append only):
+## Features
 
-- Parser  (for example)
-- interpreter of non-recursive functions (for example)
-- ...
+There are no plans to support `<const>` and other new features. The reference specification was Lua 5.0.
+
+Features done:
+
+- AST
+- Parser
+- Interpreter
+  - variables
+  - nil, boolean, numeric, string literals
+  - arithmetic and logic operations
+  - assignment
+  - function definitions, calls (with recursion) and `return`
+  - builtin functions: `print(args, ...)`, `dofile(path)`, `__show_env()`
+  - `if ... then ... else ... end`
+- REPL
+- Ability to calculate the factorial of 170
 
 Features in progress (and TODOs):
 
-- Interpreter of recursive functions is not yet ready  (for example)
-- TODO: make pretty-printing less memory consuming (for example)
-- ...
+- TODO: get rid of implicit dependences:
+  - Chunk (function call, `then`-part etc.) behaves correctly iff `Statement.execute` produces `Literal Nil` in all cases but `Return`.
+  - Assignment and `print` behave correctly iff `Expression.execute` produces nothing but `Literal` or `Identifier`.
+- Currently binary operations must be enclosed in parens, even if there's only one.
+  - E.x. `print(x + 2)` won't work, but `print((x + 2))` will.
+- Currently no support for unary operators, `not` is implemented as a function.
+- Currently no loops, no `break`s, no `do`-blocks.
+- Currently no support for the `local` keyword, all functions and variables are global.
+- Currently functions are [not anonymous](https://www.lua.org/pil/6.html).
+  - I.e. `foo = function (x) return 2*x end` won't work.
+- Currently only nil, booleans, numbers and strings are supported.
+  - No support for escaped chars. String literals are parsed from `"` to `"`.
+  - No arrays, no tables.
+  - No data structures.
 
+Limitations that differ this implementation from standard Lua:
 
-##### Замечания по стилю кодирования
+- Comments are parsed as statements, therefore may only be placed in-between of other statements.
+  - E.x. `print(x, --[[comment--]] y)` won't work.
+  - Line-long comments (those starting with `--`) are not supported, because line breaks are ignored.
+- Every expression is also a statement.
+  - E.x. one can write `print() (x+1) y=2` (or `print(); (x+1); y=2`).
+  - They'll be executed, but won't modify the program state though.
+- Tables are not supported yet, therefore no direct access to `_G` ([table with globals](https://www.lua.org/pil/14.html)).
+  - But `__show_env()` will print all declared variables with their values and all function declarations.
+- Anything else?
 
-- Если merge request не проходит CI -- проверяться не будет
-- Замечания должны быть откомментированы, иначе проверяться не будет.
-  - Если исправлены, должны быть поменчены как "исправлены"
-  - Если непонятны/некорректны, то это должно быть откомментировано соответствующим образом.
+## Usage
 
-  Такие суровые ограничения вводятся, чтобы замечания не игнорировались.
+After compilation, run `./_build/default/bin/main.exe` to enter interactive (REPL) mode. Input is executed chunk-by-chunk, each chunk may consist of several statements. Input is multi-line: a new chunk is indicated by `>` prompt, all lines having `>>` prompt are appended to this chunk. Empty input indicates the end of chunk. To exit REPL, send `EOF` (usually `Ctrl+D`).
 
-- Иимена типов и функций -- snake_case
-- Имена типов модулей и модулей -- CamelCase
-- Ворнинги должны быть пофикшены
-- Не стесняйтесь писать `if ... then ... else` вместо `match ... with true -> .. | false -> ...`
-- Не стесняйтесь писать гварды в мэтчинге, например
-```ocaml
-match ... with
-| x when f x -> ...
-| x          -> ...
-| ...
-```
-вместо
-```ocaml
-match ... with
-| x -> if f x then ... else ...
-| ...
-```
-- Вместо `fun x y -> match y with` лучше писать короче: `fun x -> function`
-- Используйте quoted string literals в тестах, чтобы не экранировать руками
-```
-─( 11:21:01 )─< command 1 >────────────────────────────
-utop # {|
-  int main () {
-    return 0;
-  }
-  |};;
-- : string = "\n  int main () {\n    return 0;\n  }\n  "
-```
-- Не надо писать
-```ocaml
-match ... with
-| x ->
-    Hashtbl.replace tbl key value |> fun () -> ...
-```
-Лучше
-```ocaml
-match ... with
-| x ->
-    let () = Hashtbl.replace tbl key value in
-    ...
-```
-или
-```ocaml
-match ... with
-| x -> (
-    Hashtbl.replace tbl key value;
-    ...
-  )
-```
-или даже
-```ocaml
-match ... with
-| x -> begin
-    Hashtbl.replace tbl key value;
-    ...
-  end
-```
-- Не надо писать
-```ocaml
-let x = if long_expression then true else false in ...
-```
-лучше
-```ocaml
-let x = long_expression in ...
-```
+To execute single program, run `./_build/default/bin/main.exe path-to-program.lua` (file extension doesn't matter). The whole program is interpreted as a chunk.
 
-- 1
+To import a program to REPL, call `dofile("path-to-program.lua")`. All the chunk will be executed immediately, all variables and functions will become available in REPL (hiding those having same names).
