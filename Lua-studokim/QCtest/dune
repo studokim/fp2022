@@ -1,4 +1,0 @@
-(executable
- (name runULC)
- (modules runULC QCTests)
- (libraries lua_lib qcheck-core qcheck-core.runner))
