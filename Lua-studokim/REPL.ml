@@ -1,56 +1,30 @@
-open Base
+(** Copyright 2022-2023, studokim and contributors *)
+
+(** SPDX-License-Identifier: LGPL-3.0-or-later *)
+
 open Lua_lib
 
-let run_repl _ =
-  Caml.Format.eprintf "OCaml-style toplevel (ocamlc, utop) is not implemented"
+(** Reads file contents and executes them as Repl does;
+    fails if the file doesn't exist. *)
+let interpret_file filepath =
+  if Sys.file_exists filepath
+  then (
+    let program = Util.read_file filepath in
+    let _ = Repl.execute program Interpreter.Environment.empty in
+    ())
+  else failwith "file doesn't exist"
 ;;
 
-let run_single eval =
-  let open Lua_lib in
-  let text = Stdio.In_channel.(input_all stdin) |> String.rstrip in
-  let ast = Parser.parse text in
-  match ast with
-  | Error e -> Caml.Format.printf "Error: %a\n%!" Parser.pp_error e
-  | Result.Ok ast ->
-    Caml.Format.printf "Parsed result: %a\n%!" Printast.pp_named ast;
-    (match eval ast with
-     | rez -> Caml.Format.printf "Evaluated result: %a\n%!" Printast.pp_named rez)
+(** Entry point.
+    Parses args, then runs repl-mode or single-file-mode.*)
+let main =
+  if Array.length Sys.argv = 2
+  then (
+    let filepath = Sys.argv.(1) in
+    interpret_file filepath)
+  else (
+    print_endline "Hello from Lua!";
+    Repl.iterate Interpreter.Environment.empty)
 ;;
 
-type strategy =
-  | CBN
-  | CBV
-  | NO
-  | AO
-
-type opts =
-  { mutable batch : bool
-  ; mutable stra : strategy
-  }
-
-let () =
-  let opts = { batch = false; stra = CBN } in
-  let open Caml.Arg in
-  parse
-    [ ( "-"
-      , Unit (fun () -> opts.batch <- true)
-      , "Read from stdin single program, instead of running full REPL" )
-    ; "-cbv", Unit (fun () -> opts.stra <- CBV), "Call-by-value strategy"
-    ; "-cbn", Unit (fun () -> opts.stra <- CBN), "Call-by-name strategy"
-    ; "-no", Unit (fun () -> opts.stra <- NO), "Normal Order strategy"
-    ; "-ao", Unit (fun () -> opts.stra <- NO), "Applicative Order strategy"
-    ]
-    (fun _ ->
-      Caml.Format.eprintf "Positioned arguments are not supported\n";
-      Caml.exit 1)
-    "Read-Eval-Print-Loop for Utyped Lambda Calculus";
-  let eval =
-    Lambda.apply_strat
-      (match opts.stra with
-       | NO -> Lambda.nor_strat
-       | CBV -> Lambda.cbv_strat
-       | AO -> Lambda.ao_strat
-       | CBN -> Lambda.cbn_strat)
-  in
-  (if opts.batch then run_single else run_repl) eval
-;;
+let () = main

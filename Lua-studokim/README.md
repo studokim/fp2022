@@ -39,6 +39,7 @@ Features in progress (and TODOs):
   - I.e. `foo = function (x) return 2*x end` won't work.
 - Currently only nil, booleans, numbers and strings are supported.
   - No support for escaped chars. String literals are parsed from `"` to `"`.
+  - No support for scientific e-notation in numbers.
   - No arrays, no tables.
   - No data structures.
 

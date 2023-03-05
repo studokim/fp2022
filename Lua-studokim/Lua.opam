@@ -12,13 +12,8 @@ bug-reports: "-"
 depends: [
   "dune" {>= "2.8"}
   "angstrom"
-  "ppx_inline_test" {with-test}
-  "qcheck-core"
-  "ppx_expect"
-  "ppx_deriving"
   "odoc" {with-doc}
   "ocamlformat" {build}
-  "base"
 ]
 build: [
   ["dune" "subst"] {dev}

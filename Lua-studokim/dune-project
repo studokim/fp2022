@@ -23,12 +23,7 @@
  (depends
   dune
   angstrom
-  (ppx_inline_test :with-test)
-  qcheck-core
-  ppx_expect
-  ppx_deriving
   (odoc :with-doc)
   (ocamlformat :build)
-  base
   ; After adding dependencies to 'dune' files add the same dependecies here too
   ))

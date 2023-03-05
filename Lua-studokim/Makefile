@@ -4,7 +4,7 @@ all:
 	dune build
 
 repl:
-	dune build ./REPL.exe && rlwrap _build/default/REPL.exe
+	dune build ./REPL.exe && _build/default/REPL.exe
 
 tests: test
 test:
@@ -20,7 +20,9 @@ fmt:
 lint:
 	dune build @lint --force
 
+doc:
+	dune build @doc
+
 release:
 	dune build --profile=release
 	dune runtest --profile=release
-

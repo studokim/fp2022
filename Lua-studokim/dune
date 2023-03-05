@@ -10,7 +10,9 @@
  (name REPL)
  (public_name REPL)
  (modules REPL)
- (libraries Lua.Lib stdio))
+ (libraries Lua.Lib))
 
 (cram
- (deps ./REPL.exe %{bin:REPL}))
+ (deps
+  ./REPL.exe
+  (glob_files test/**.lua)))
