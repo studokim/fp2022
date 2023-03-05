@@ -1,5 +1,5 @@
 (library
  (name lua_lib)
- (public_name Lua.Lib)
+ (public_name lua.Lib)
  (modules Ast Parser Interpreter Util Repl)
  (libraries angstrom))

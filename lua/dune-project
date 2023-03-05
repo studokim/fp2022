@@ -15,7 +15,7 @@
 (homepage "-")
 
 (package
- (name Lua)
+ (name lua)
  (synopsis "An interpreter for Lua")
  (description
   "An interpreter for Lua language that at least should be able to execute a program that computes the factorial.")

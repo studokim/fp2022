@@ -10,7 +10,7 @@
  (name REPL)
  (public_name REPL)
  (modules REPL)
- (libraries Lua.Lib))
+ (libraries lua.Lib))
 
 (cram
  (deps
